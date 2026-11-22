@@ -1,0 +1,7 @@
+train,origin,destination,departure,arrival
+A,Peradeniya Junction,Gampola,09:39,10:00
+A,Gampola,Nawalapitiya,10:02,10:27
+B,Nawalapitiya,Gampola,09:31,09:58
+B,Gampola,Peradeniya Junction,10:00,10:18
+C,Peradeniya Junction,Gampola,10:18,10:39
+C,Gampola,Nawalapitiya,10:41,11:06
