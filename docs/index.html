@@ -67,7 +67,22 @@
             <article class="panel metric"><small>Completed replications</small><strong id="replications-result">0</strong></article>
           </div>
           <div class="panel chart"><h3>Waiting time distribution</h3><p>Share of completed trials by waiting-time range (minutes).</p><div id="histogram" class="histogram">Experiment results will appear here.</div></div>
-          <div class="panel heading chart"><div><h3>Analytical benchmark</h3><p>Equal five-minute exponential entry means and zero planned gap.</p></div><div class="clock"><small>Expected mean wait</small><strong>2.5 min</strong><small>Verification pending</small></div></div>
+          <section class="panel chart" aria-labelledby="verification-title">
+            <div class="heading">
+              <div><h3 id="verification-title">Analytical benchmark</h3><p>Independent fictional two-service queue benchmark from the notebook.</p></div>
+              <button id="verify-benchmark" class="verify-button">Run verification</button>
+            </div>
+            <p>50,000 replications · Seed 42 · Equal five-minute exponential entry means · Fixed service duration · Zero planned gap and imposed delay.</p>
+            <p>Pass criterion: absolute mean error ≤ four analytical standard errors, calculated as 4√(18.75 / 50,000) minutes.</p>
+            <dl class="verification-grid">
+              <div><dt>Analytical mean</dt><dd>2.5000 min</dd></div>
+              <div><dt>Simulated mean</dt><dd id="verified-mean">—</dd></div>
+              <div><dt>Absolute error</dt><dd id="verified-error">—</dd></div>
+              <div><dt>Allowed error</dt><dd id="verified-tolerance">—</dd></div>
+            </dl>
+            <p id="verification-status" role="status">Verification pending</p>
+            <p>The benchmark uses fixed settings independently of the experiment controls.</p>
+          </section>
         </section>
       </div>
     </div>
@@ -77,6 +92,7 @@
   </main>
   <script src="simulation.js"></script>
   <script src="statistics.js"></script>
+  <script src="verification.js"></script>
   <script src="animation.js"></script>
 </body>
 </html>
