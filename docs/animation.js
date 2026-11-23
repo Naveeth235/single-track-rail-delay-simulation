@@ -6,6 +6,56 @@
   let elapsed = 0;
   let frame = null;
   let previous = null;
+  let settings, random, observations, target;
+
+  function monteMode() {
+    return byId("mode").value === "monte";
+  }
+
+  function renderStatistics() {
+    const result = QueueStatistics.summarize(observations);
+    byId("mean-result").textContent = result ? result.mean.toFixed(2) + " min" : "— min";
+    byId("ci-result").textContent = result && observations.length > 1
+      ? result.low.toFixed(2) + " – " + result.high.toFixed(2) : "— min";
+    byId("replications-result").textContent = observations.length.toLocaleString();
+    const chart = byId("histogram");
+    chart.replaceChildren();
+    if (!result) {
+      chart.textContent = "Experiment results will appear here.";
+      return;
+    }
+    for (const bin of QueueStatistics.histogram(observations)) {
+      const row = document.createElement("div");
+      row.className = "histogram-row";
+      const label = document.createElement("span");
+      label.textContent = bin.label;
+      const track = document.createElement("div");
+      track.className = "histogram-track";
+      const bar = document.createElement("div");
+      bar.className = "histogram-bar";
+      const percentage = 100 * bin.count / observations.length;
+      bar.style.width = percentage + "%";
+      track.append(bar);
+      const value = document.createElement("span");
+      value.className = "histogram-value";
+      value.textContent = percentage.toFixed(1) + "%";
+      row.append(label, track, value);
+      chart.append(row);
+    }
+  }
+
+  function sampleBatch() {
+    const limit = Math.min(target, observations.length + 500);
+    while (observations.length < limit) {
+      observations.push(QueueBenchmark.simulate(QueueBenchmark.sampleScenario(settings, random)).wait);
+    }
+    renderStatistics();
+    if (observations.length >= target) {
+      stop("Complete");
+    } else {
+      frame = requestAnimationFrame(sampleBatch);
+    }
+  }
 
   function resetExample() {
     stop("Ready to play");
@@ -15,7 +65,7 @@
     if (!Number.isInteger(seed) || seed < 1 || seed > 4294967295) {
       seedInput.value = "42";
     }
-    const settings = {
+    settings = {
       delay: Number(byId("delay").value),
       buffer: Number(byId("buffer").value),
       entryMean: Number(byId("entry").value),
@@ -24,9 +74,23 @@
     for (const id of ["delay", "buffer", "entry", "variation"]) {
       byId(id + "-value").textContent = byId(id).value + (id === "variation" ? "%" : " min");
     }
-    const random = QueueBenchmark.createRandom(Number(seedInput.value));
+    random = QueueBenchmark.createRandom(Number(seedInput.value));
     example = QueueBenchmark.simulate(QueueBenchmark.sampleScenario(settings, random));
-    byId("single-result").textContent = "Trial result pending.";
+    random = QueueBenchmark.createRandom(Number(seedInput.value));
+    observations = [];
+    const runs = byId("runs");
+    target = runs.valueAsNumber;
+    if (!Number.isInteger(target) || target < 100 || target > 50000) {
+      target = 1000;
+      runs.value = String(target);
+    }
+    runs.disabled = !monteMode();
+    byId("speed").disabled = monteMode();
+    byId("single-view").hidden = monteMode();
+    byId("clock-panel").hidden = monteMode();
+    byId("mode-badge").textContent = monteMode() ? "Monte Carlo experiment" : "Single simulation";
+    byId("single-result").textContent = monteMode() ? "Repeated sampling mode." : "Trial result pending.";
+    renderStatistics();
     render();
   }
 
@@ -78,6 +142,14 @@
 
   byId("start").addEventListener("click", () => {
     if (frame !== null) return;
+    if (monteMode()) {
+      if (observations.length >= target) resetExample();
+      byId("start").disabled = true;
+      byId("pause").disabled = false;
+      byId("playback-state").textContent = "Sampling";
+      frame = requestAnimationFrame(sampleBatch);
+      return;
+    }
     if (elapsed >= example.endTime) resetExample();
     previous = null;
     render();
@@ -92,5 +164,7 @@
     byId(id).addEventListener("input", resetExample);
   }
   byId("seed").addEventListener("change", resetExample);
+  byId("mode").addEventListener("change", resetExample);
+  byId("runs").addEventListener("change", resetExample);
   resetExample();
 })();

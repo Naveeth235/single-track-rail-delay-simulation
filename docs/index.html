@@ -11,7 +11,7 @@
   <main>
     <div class="intro">
       <div><h1>Explore delay propagation</h1><p>Investigate waiting and uncertainty using a fictional two-service benchmark.</p></div>
-      <span class="badge">Single simulation</span>
+      <span class="badge" id="mode-badge">Single simulation</span>
     </div>
     <div class="dashboard">
       <aside class="panel">
@@ -19,7 +19,7 @@
         <p>Adjust the fictional queue inputs. Changing a setting resets playback.</p>
         <fieldset>
           <label for="mode">Experiment mode</label>
-          <select id="mode" disabled><option>Single simulation</option><option>Monte Carlo experiment (coming next)</option></select>
+          <select id="mode"><option value="single">Single simulation</option><option value="monte">Monte Carlo experiment</option></select>
           <label for="delay">Initial delay <span id="delay-value">5 min</span></label>
           <input id="delay" type="range" min="0" max="20" value="5">
           <label for="buffer">Buffer <span id="buffer-value">0 min</span></label>
@@ -29,15 +29,16 @@
           <label for="variation">Service duration variation <span id="variation-value">0%</span></label>
           <input id="variation" type="range" min="0" max="30" value="0">
           <label for="runs">Monte Carlo replications</label>
-          <input id="runs" type="number" min="100" value="1000" disabled>
+          <input id="runs" type="number" min="100" max="50000" step="1" value="1000" disabled>
           <label for="seed">Random seed</label>
           <input id="seed" type="number" min="1" max="4294967295" step="1" value="42" required>
         </fieldset>
       </aside>
       <div class="content">
         <section class="panel">
-          <div class="heading"><div><h2>Live visualization</h2><p>Fictional shared resource</p></div><div class="clock"><small>Elapsed time</small><strong id="elapsed">00:00</strong></div></div>
+          <div class="heading"><div><h2>Live visualization</h2><p>Fictional shared resource</p></div><div class="clock" id="clock-panel"><small>Elapsed time</small><strong id="elapsed">00:00</strong></div></div>
           <div class="queue-view">
+            <div id="single-view">
             <div class="resource-heading"><h3>Shared resource</h3><span id="resource-state">Idle</span></div>
             <div class="queue-lane">
               <span class="marker">A</span>
@@ -48,6 +49,7 @@
               <span class="marker orange">B</span>
               <div class="lane-detail"><strong id="state-B">Pending</strong><progress id="progress-B" max="1" value="0" aria-label="Service B progress"></progress></div>
               <span id="wait-B">0.0 min waiting</span>
+            </div>
             </div>
             <p id="playback-state" role="status">Ready to play</p>
             <p id="single-result" aria-live="polite">Trial result pending.</p>
@@ -60,20 +62,21 @@
         <section>
           <h2 class="section-title">Results</h2>
           <div class="metrics">
-            <article class="panel metric"><small>Mean conflict wait</small><strong>— min</strong></article>
-            <article class="panel metric"><small>95% confidence interval</small><strong>— min</strong></article>
-            <article class="panel metric"><small>Completed replications</small><strong>0</strong></article>
+            <article class="panel metric"><small>Mean conflict wait</small><strong id="mean-result">— min</strong></article>
+            <article class="panel metric"><small>95% confidence interval</small><strong id="ci-result">— min</strong></article>
+            <article class="panel metric"><small>Completed replications</small><strong id="replications-result">0</strong></article>
           </div>
-          <div class="panel chart"><h3>Waiting time comparison</h3><div class="empty">Experiment results will appear here.</div></div>
+          <div class="panel chart"><h3>Waiting time distribution</h3><p>Share of completed trials by waiting-time range (minutes).</p><div id="histogram" class="histogram">Experiment results will appear here.</div></div>
           <div class="panel heading chart"><div><h3>Analytical benchmark</h3><p>Equal five-minute exponential entry means and zero planned gap.</p></div><div class="clock"><small>Expected mean wait</small><strong>2.5 min</strong><small>Verification pending</small></div></div>
         </section>
       </div>
     </div>
     <section class="panel guide">
-      <details open><summary>About / How to use</summary><p>Choose the fictional queue inputs and press Start. Watch each service progress through pending, waiting, in-service and complete states. Pause freezes the clock, and Reset returns to the beginning. An identical seed and settings reproduce the same trial. Monte Carlo results will be added in the next stage.</p></details>
+      <details open><summary>About / How to use</summary><p>Choose single simulation to watch the fictional queue or Monte Carlo to estimate its waiting-time distribution. Set the inputs and press Start. Pause suspends playback or sampling; Reset returns to the beginning. Identical seeds and settings reproduce results. The confidence interval estimates sampling uncertainty in the mean using 1.96 sample standard errors.</p></details>
     </section>
   </main>
   <script src="simulation.js"></script>
+  <script src="statistics.js"></script>
   <script src="animation.js"></script>
 </body>
 </html>
