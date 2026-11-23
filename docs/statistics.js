@@ -8,7 +8,7 @@
       ? values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / (values.length - 1)
       : 0;
     const margin = 1.96 * Math.sqrt(variance / values.length);
-    return { mean, low: Math.max(0, mean - margin), high: mean + margin };
+    return { mean, low: mean - margin, high: mean + margin };
   }
 
   function histogram(values) {

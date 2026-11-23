@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header><strong>Railway Delay Lab</strong><span>SE4042 · Transportation modelling</span></header>
+  <header><strong>Railway Delay Lab</strong><span>Transportation modelling</span></header>
   <main>
     <div class="intro">
       <div><h1>Explore delay propagation</h1><p>Trace how a late train at Peradeniya Junction delays the crossing at Gampola and the following departure.</p></div>
@@ -26,7 +26,7 @@
           <input id="buffer" type="range" min="0" max="15" value="0">
           <label for="entry">Mean entry delay <span id="entry-value">0 min</span></label>
           <input id="entry" type="range" min="0" max="10" value="0">
-          <label for="variation">Service duration variation <span id="variation-value">0%</span></label>
+          <label for="variation">Segment running-time variation <span id="variation-value">0%</span></label>
           <input id="variation" type="range" min="0" max="30" value="0">
           <label for="runs">Monte Carlo replications</label>
           <input id="runs" type="number" min="100" max="50000" step="1" value="1000" disabled>
@@ -36,7 +36,7 @@
       </aside>
       <div class="content">
         <section class="panel">
-          <div class="heading"><div><h2>Live visualization</h2><p>Peradeniya Junction – Gampola – Nawalapitiya</p></div><div class="clock" id="clock-panel"><small>Timetable clock</small><strong id="elapsed">00:00</strong></div></div>
+          <div class="heading"><div><h2 id="activity-title">Live visualization</h2><p>Peradeniya Junction – Gampola – Nawalapitiya</p></div><div class="clock" id="clock-panel"><small>Timetable clock</small><strong id="elapsed">00:00</strong></div></div>
           <figure id="rail-scene" class="rail-scene" aria-label="Three trains on the modelled corridor">
             <img src="rail-landscape.webp" alt="Illustrated hill-country railway landscape with a small station">
             <canvas id="rail-map" height="92" aria-hidden="true"></canvas>
@@ -92,6 +92,7 @@
             <article class="panel metric"><small>95% confidence interval</small><strong id="ci-result">— min</strong></article>
             <article class="panel metric"><small>Completed replications</small><strong id="replications-result">0</strong></article>
           </div>
+          <p id="interval-note"></p>
           <div class="panel chart"><h3>Waiting time distribution</h3><p>Share of completed trials by additional B + C waiting (train-minutes).</p><div id="histogram" class="histogram">Experiment results will appear here.</div></div>
           </div>
           </section>
@@ -116,7 +117,12 @@
       </div>
     </div>
     <section class="panel guide">
-      <details open><summary>About / How to use</summary><p>A and C travel from Peradeniya Junction to Nawalapitiya. B travels in reverse. At Gampola trains dwell for at least two minutes. Each block admits one train in timetable order. Try a 25-minute disruption with zero random delay and zero buffer: B and C each wait 25 minutes. Then set a 15-minute buffer and compare. Monte Carlo pairs each disrupted timetable with a background-only run using identical entry and segment draws. Set the inputs and press Start. Pause suspends playback or sampling; Reset returns to the beginning. Identical seeds and settings reproduce results. The confidence interval estimates sampling uncertainty in the mean using 1.96 sample standard errors.</p></details>
+      <details open><summary>About / How to use</summary>
+        <p>A and C travel from Peradeniya Junction to Nawalapitiya. B travels in reverse. Each single-track block admits one train at a time in timetable order. Trains stop at Gampola for at least two minutes.</p>
+        <p><strong>Watch the crossing.</strong> Start with a 25-minute disruption, zero buffer and both random inputs at zero. B waits 25 extra minutes at Gampola and C waits 25 at Peradeniya Junction. Increase the buffer to 15 minutes and run again. Their combined extra wait falls from 50 to 20 train-minutes.</p>
+        <p><strong>Try a Monte Carlo experiment.</strong> Set the mean entry delay to 5 minutes and press Start. Each trial compares two timetables with the same sampled entry delays and running times. Only one has the imposed disruption to A. The difference in waiting for B and C measures the knock-on effect. The bars show how often each outcome occurs. The approximate 95% confidence interval uses 1.96 sample standard errors to describe uncertainty in the estimated mean.</p>
+        <p>Pause suspends playback or sampling. Start resumes a paused run. Reset returns to the beginning. Identical seeds and settings reproduce results.</p>
+      </details>
     </section>
   </main>
   <script src="simulation.js"></script>

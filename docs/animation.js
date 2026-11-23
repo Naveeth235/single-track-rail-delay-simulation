@@ -75,8 +75,13 @@
     byId("sampling-hint").hidden = Boolean(result);
     byId("mean-result").textContent = result ? result.mean.toFixed(2) + " train-min" : "— min";
     byId("ci-result").textContent = result && observations.length > 1
-      ? result.low.toFixed(2) + " – " + result.high.toFixed(2) : "— min";
+      ? result.low.toFixed(2) + " – " + result.high.toFixed(2) + " train-min" : "— min";
     byId("replications-result").textContent = observations.length.toLocaleString();
+    const fixedInputs = settings.entryMean === 0 && settings.variation === 0;
+    byId("interval-note").textContent = result && fixedInputs
+      ? "With random entry delays and running-time variation both off, every trial gives " +
+        result.mean.toFixed(2) + " train-minutes. Both ends of the interval are equal."
+      : "The interval estimates uncertainty in the mean across trials.";
     const chart = byId("histogram");
     chart.replaceChildren();
     if (!result) {
@@ -112,12 +117,13 @@
     if (observations.length >= target) {
       stop("Complete");
     } else {
+      byId("playback-state").textContent = samplingStatus("Sampling");
       frame = requestAnimationFrame(sampleBatch);
     }
   }
 
   function resetExample() {
-    stop("Ready to play");
+    stop(monteMode() ? "Ready to sample" : "Ready to play");
     elapsed = 0;
     const seedInput = byId("seed");
     const seed = seedInput.valueAsNumber;
@@ -143,6 +149,7 @@
       target = 1000;
       runs.value = String(target);
     }
+    byId("activity-title").textContent = monteMode() ? "Experiment progress" : "Live visualization";
     runs.disabled = !monteMode();
     byId("journey-results").hidden = monteMode();
     byId("sampling-results").hidden = !monteMode();
@@ -196,13 +203,19 @@
     byId("rail-scene").classList.toggle("occupied", blocks.some(value => value !== "clear"));
   }
 
+  function samplingStatus(message) {
+    return message + " · " + observations.length.toLocaleString() + " of " +
+      target.toLocaleString() + " trials completed";
+  }
+
   function stop(message) {
     if (frame !== null) cancelAnimationFrame(frame);
     frame = null;
     previous = null;
     byId("start").disabled = false;
     byId("pause").disabled = true;
-    byId("playback-state").textContent = message;
+    byId("playback-state").textContent = monteMode() && (message === "Complete" || message === "Paused")
+      ? samplingStatus(message) : message;
   }
 
   function tick(timestamp) {
@@ -225,7 +238,7 @@
       if (observations.length >= target) resetExample();
       byId("start").disabled = true;
       byId("pause").disabled = false;
-      byId("playback-state").textContent = "Sampling";
+      byId("playback-state").textContent = samplingStatus("Sampling");
       frame = requestAnimationFrame(sampleBatch);
       return;
     }
