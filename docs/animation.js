@@ -8,6 +8,42 @@
   let previous = null;
   let settings, random, observations, target;
 
+  // Map coordinates are percentages across the scene and pixels above the main line.
+  const loop = [[36, 0], [42, 33], [58, 33], [64, 0]];
+  function loopRise(x) {
+    for (let i = 1; i < loop.length; i++) {
+      const [left, height] = loop[i - 1];
+      const [right, nextHeight] = loop[i];
+      if (x >= left && x <= right) return height + (nextHeight - height) * (x - left) / (right - left);
+    }
+    return 0;
+  }
+  function drawTrack() {
+    const canvas = byId("rail-map");
+    const width = canvas.clientWidth;
+    if (!width) return;
+    const scale = window.devicePixelRatio || 1;
+    canvas.width = Math.round(width * scale);
+    canvas.height = Math.round(92 * scale);
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+    ctx.lineJoin = "round";
+    for (const points of [[[0, 0], [100, 0]], loop]) {
+      ctx.beginPath();
+      points.forEach(([x, rise], i) => {
+        ctx[i ? "lineTo" : "moveTo"](width * x / 100, 72 - rise);
+      });
+      for (const [color, thickness, dash] of [["#aea994", 11, []], ["#60584b", 10, [2, 5]],
+                                                ["#394342", 5, []], ["#cac9b6", 2, []]]) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = thickness;
+        ctx.setLineDash(dash);
+        ctx.stroke();
+      }
+    }
+  }
+  new ResizeObserver(drawTrack).observe(byId("rail-map"));
+
   function monteMode() {
     return byId("mode").value === "monte";
   }
@@ -114,7 +150,12 @@
       } else if (elapsed >= leg.ready) state = "Waiting at " + Corridor.stations[leg.origin];
       byId("state-" + id).textContent = state;
       byId("progress-" + id).value = (Number(second) + progress) / 2;
-      byId("train-" + id).style.left = (10 + 40 * position) + "%";
+      const train = byId("train-" + id);
+      const x = 10 + 40 * position;
+      train.style.left = x + "%";
+      train.style.setProperty("--loop-rise", (id === "B" ? loopRise(x) : 0) + "px");
+      // Off-corridor services are still listed in the status rows.
+      train.hidden = elapsed < route[0].ready || elapsed >= route[1].finish;
       const waited = route.reduce((sum, item) => sum + Math.min(item.wait, Math.max(0, elapsed - item.ready)), 0);
       byId("wait-" + id).textContent = waited.toFixed(1) + " min waiting";
     }
