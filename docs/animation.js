@@ -172,11 +172,14 @@
       byId("state-" + id).textContent = state;
       byId("progress-" + id).value = (Number(second) + progress) / 2;
       const train = byId("train-" + id);
-      const x = 10 + 40 * position;
+      // Park C behind A at the western terminus and animate continuously
+      // from its parking position when the first leg begins.
+      const x = id === "C" && !second
+        ? 3.5 + (50 - 3.5) * progress
+        : 10 + 40 * position;
       train.style.left = x + "%";
       train.style.setProperty("--loop-rise", (id === "B" ? loopRise(x) : 0) + "px");
-      // Off-corridor services are still listed in the status rows.
-      train.hidden = elapsed < route[0].ready || elapsed >= route[1].finish;
+      train.hidden = elapsed >= route[1].finish;
       const waited = route.reduce((sum, item) => sum + Math.min(item.wait, Math.max(0, elapsed - item.ready)), 0);
       byId("wait-" + id).textContent = waited.toFixed(1) + " min waiting";
     }

@@ -22,7 +22,7 @@
   --coach-color: #247a74;
   position: absolute;
   bottom: calc(66px + var(--loop-rise, 0px));
-  width: clamp(32px, 8%, 78px);
+  width: min(6%, 78px);
   height: clamp(19px, 2.4vw, 29px);
   transform: translateX(-50%);
   border: 1px solid #233831;
