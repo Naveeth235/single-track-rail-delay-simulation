@@ -1,4 +1,4 @@
-# Railway Delay Lab
+# Railway Delay Simulator
 
 Explore how one late train delays two others on the single-track corridor between Peradeniya Junction and Nawalapitiya in Sri Lanka.
 

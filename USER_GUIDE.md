@@ -1,4 +1,4 @@
-# How to use Railway Delay Lab
+# How to use Railway Delay Simulator
 
 Open `docs/index.html` from the extracted project or visit the [GitHub Pages demo](https://naveeth235.github.io/single-track-rail-delay-simulation/).
 

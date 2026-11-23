@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Railway Delay Lab</title>
+  <title>Railway Delay Simulator</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
     <div class="intro">
-      <div><h1>Railway Delay Lab</h1><p class="route-title">Peradeniya Junction &ndash; Gampola &ndash; Nawalapitiya</p><p>Trace how a late train at Peradeniya Junction delays the crossing at Gampola and the following departure.</p></div>
+      <div><h1>Railway Delay Simulator</h1><p class="route-title">Peradeniya Junction &ndash; Gampola &ndash; Nawalapitiya</p><p>Trace how a late train at Peradeniya Junction delays the crossing at Gampola and the following departure.</p></div>
       <span class="badge" id="mode-badge">Single simulation</span>
     </div>
     <div class="dashboard">
-      <aside class="panel">
+      <aside class="sidebar">
+      <section class="panel">
         <h2>Simulation settings</h2>
         <p>Adjust the corridor timetable and delay inputs. Changing a setting resets playback.</p>
         <fieldset>
@@ -32,6 +33,14 @@
           <label for="seed">Random seed</label>
           <input id="seed" type="number" min="1" max="4294967295" step="1" value="42" required>
         </fieldset>
+      </section>
+      <section class="panel guide">
+        <h2>How to use</h2>
+        <p><strong>1. Watch a journey</strong><br>Choose Single simulation and press Start. Watch the trains cross and check their waiting times.</p>
+        <p><strong>2. Compare buffers</strong><br>Increase the buffer and replay to see how the extra waiting changes.</p>
+        <p><strong>3. Try Monte Carlo</strong><br>Enable random delays or running-time variation, then Start. Read the mean, confidence interval and distribution.</p>
+        <p><strong>4. Check the model</strong><br>Press Run verification to compare against the reference results.</p>
+      </section>
       </aside>
       <div class="content">
         <section class="panel">
@@ -115,14 +124,6 @@
         </section>
       </div>
     </div>
-    <section class="panel guide">
-      <details open><summary>About / How to use</summary>
-        <p>A and C travel from Peradeniya Junction to Nawalapitiya. B travels in reverse. Each single-track block admits one train at a time in timetable order. Trains stop at Gampola for at least two minutes.</p>
-        <p><strong>Watch the crossing.</strong> Start with a 25-minute disruption, zero buffer and both random inputs at zero. B waits 25 extra minutes at Gampola and C waits 25 at Peradeniya Junction. Increase the buffer to 15 minutes and run again. Their combined extra wait falls from 50 to 20 train-minutes.</p>
-        <p><strong>Try a Monte Carlo experiment.</strong> Set the mean entry delay to 5 minutes and press Start. Each trial compares two timetables with the same sampled entry delays and running times. Only one has the imposed disruption to A. The difference in waiting for B and C measures the knock-on effect. The bars show how often each outcome occurs. The approximate 95% confidence interval uses 1.96 sample standard errors to describe uncertainty in the estimated mean.</p>
-        <p>Pause suspends playback or sampling. Start resumes a paused run. Reset returns to the beginning. Identical seeds and settings reproduce results.</p>
-      </details>
-    </section>
   </main>
   <script src="simulation.js"></script>
   <script src="statistics.js"></script>
