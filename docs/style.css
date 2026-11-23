@@ -28,6 +28,14 @@
   display: flex; align-items: center; justify-content: space-evenly;
 }
 .rail-train b { font: bold 11px/1 system-ui; color: white; }
+.rail-scene #train-B { bottom: calc(16% + 34px); border-radius: 11px 4px 3px 3px; }
+.rail-scene #train-C { bottom: calc(16% + 64px); background: #70528a; }
+.marker.violet { background: #70528a; }
+.station-labels { position: absolute; inset: auto 0 0; height: 15%; background: #183d34; color: white; font: 600 clamp(9px, 1.3vw, 13px)/1.1 system-ui; }
+.station-labels span { position: absolute; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; }
+.station-labels span:first-child { left: 10%; }
+.station-labels span:nth-child(2) { left: 50%; }
+.station-labels span:last-child { left: 90%; }
 .rail-train i { width: 48%; height: 32%; background: repeating-linear-gradient(90deg,#c4dcdc 0 22%,transparent 22% 32%); }
 #train-B { background: linear-gradient(#f8e1ba 0 19%,#a24c31 20% 77%,#efd2a7 78% 86%,#583d32 87%); }
 .rail-scene figcaption { position: absolute; top: 12px; left: 12px; padding: 5px 10px; border-radius: 20px; background: #173e36; color: white; font-size: 12px; font-weight: 600; }

@@ -1,5 +1,13 @@
 # Offline browser verification
 
+## Three-train corridor
+
+Chrome and Edge loaded the corridor dashboard directly from disk with networking disabled. Both passed layout checks at 320, 390, 768 and 1280 pixels. Playback showed B waiting at Gampola, paused and resumed, and reported 50 additional train-minutes for B and C in the zero-buffer hand calculation. The deterministic 15-minute buffer produced 20 train-minutes. Both the corridor hand checks and the independent analytical check passed.
+
+Against the Python notebook engine, the JavaScript implementation matched all six departures, arrivals and conflict waits in each of 120 cases within 1e-9 minutes. The cases included the four hand-check buffers and seeded random delays and running times. Comparing identical sampled inputs avoids dependence on the languages' different random number generators.
+
+## Earlier two-service prototype
+
 Tested the fictional two-service dashboard on Windows before deployment. Chrome 157.0.8103.79 and Edge 158.0.4370.33 opened `docs/index.html` directly from disk with networking emulated offline. Both headless runs used temporary profiles and disabled the inner browser sandbox to accommodate the test environment.
 
 | Check | Observed in both browsers |

@@ -29,6 +29,14 @@
   const button = document.getElementById("verify-benchmark");
   button.addEventListener("click", () => {
     const result = verify();
+    const checks = [0, 5, 10, 15].map(buffer => {
+      const settings = { delay: 25, buffer, entryMean: 0, variation: 0 };
+      return Corridor.trial(settings, root.QueueBenchmark.createRandom(42)).wait;
+    });
+    const corridorPass = checks.every((wait, i) => Math.abs(wait - (50 - 10 * i)) <= 1e-9);
+    document.getElementById("corridor-check").textContent =
+      (corridorPass ? "PASS" : "FAIL") + " · Corridor hand check at buffers 0, 5, 10 and 15 min: " +
+      checks.join(", ") + " train-min (expected 50, 40, 30, 20 within 1e−9 train-min).";
     const set = (id, value) => { document.getElementById(id).textContent = value; };
     set("verified-mean", result.mean.toFixed(4) + " min");
     set("verified-error", result.error.toFixed(4) + " min");

@@ -1,4 +1,4 @@
-/* Playback of the independent fictional queue example. */
+/* Playback of the independent three-train corridor. */
 (function () {
   "use strict";
   const byId = id => document.getElementById(id);
@@ -14,7 +14,7 @@
 
   function renderStatistics() {
     const result = QueueStatistics.summarize(observations);
-    byId("mean-result").textContent = result ? result.mean.toFixed(2) + " min" : "— min";
+    byId("mean-result").textContent = result ? result.mean.toFixed(2) + " train-min" : "— min";
     byId("ci-result").textContent = result && observations.length > 1
       ? result.low.toFixed(2) + " – " + result.high.toFixed(2) : "— min";
     byId("replications-result").textContent = observations.length.toLocaleString();
@@ -47,7 +47,7 @@
   function sampleBatch() {
     const limit = Math.min(target, observations.length + 500);
     while (observations.length < limit) {
-      observations.push(QueueBenchmark.simulate(QueueBenchmark.sampleScenario(settings, random)).wait);
+      observations.push(Corridor.trial(settings, random).wait);
     }
     renderStatistics();
     if (observations.length >= target) {
@@ -75,7 +75,7 @@
       byId(id + "-value").textContent = byId(id).value + (id === "variation" ? "%" : " min");
     }
     random = QueueBenchmark.createRandom(Number(seedInput.value));
-    example = QueueBenchmark.simulate(QueueBenchmark.sampleScenario(settings, random));
+    example = Corridor.trial(settings, random);
     random = QueueBenchmark.createRandom(Number(seedInput.value));
     observations = [];
     const runs = byId("runs");
@@ -96,32 +96,31 @@
   }
 
   function render() {
-    const seconds = Math.floor(elapsed * 60);
-    byId("elapsed").textContent = String(Math.floor(seconds / 60)).padStart(2, "0") +
-      ":" + String(seconds % 60).padStart(2, "0");
-    let occupied = null;
-    for (const job of example.movements) {
-      let state = "Pending";
-      if (elapsed >= job.finish) {
-        state = "Complete";
-      } else if (elapsed >= job.start) {
-        state = "In service";
-        occupied = job.id;
-      } else if (elapsed >= job.ready) {
-        state = "Waiting";
-      }
-      byId("state-" + job.id).textContent = state;
-      const progress = Math.max(0, Math.min(1, (elapsed - job.start) / job.duration));
-      byId("progress-" + job.id).value = progress;
-      // A starts ahead of B. Separate berths keep both visible at either end.
-      const berth = job.id === "A" ? 24 : 8;
-      byId("train-" + job.id).style.left = (berth + 68 * progress) + "%";
-      const wait = Math.max(0, Math.min(job.wait, elapsed - job.ready));
-      byId("wait-" + job.id).textContent = wait.toFixed(1) + " min waiting";
+    const minute = 571 + Math.floor(elapsed);
+    byId("elapsed").textContent = String(Math.floor(minute / 60)).padStart(2, "0") + ":" +
+      String(minute % 60).padStart(2, "0");
+    const blocks = ["clear", "clear"];
+    for (const [i, id] of ["A", "B", "C"].entries()) {
+      const route = example.legs.slice(i * 2, i * 2 + 2);
+      const second = elapsed >= route[0].finish;
+      const leg = route[Number(second)];
+      const progress = Math.min(1, Math.max(0, (elapsed - leg.start) / (leg.finish - leg.start)));
+      const position = leg.origin + progress * (leg.destination - leg.origin);
+      let state = second ? "At Gampola" : "Awaiting entry";
+      if (elapsed >= leg.finish) state = "Arrived at " + Corridor.stations[leg.destination];
+      else if (elapsed >= leg.start) {
+        state = "To " + Corridor.stations[leg.destination];
+        blocks[Math.min(leg.origin, leg.destination)] = id;
+      } else if (elapsed >= leg.ready) state = "Waiting at " + Corridor.stations[leg.origin];
+      byId("state-" + id).textContent = state;
+      byId("progress-" + id).value = (Number(second) + progress) / 2;
+      byId("train-" + id).style.left = (10 + 40 * position) + "%";
+      const waited = route.reduce((sum, item) => sum + Math.min(item.wait, Math.max(0, elapsed - item.ready)), 0);
+      byId("wait-" + id).textContent = waited.toFixed(1) + " min waiting";
     }
-    byId("resource-state").textContent = occupied ? "In use by " + occupied : "Idle";
-    byId("signal-label").textContent = occupied ? "Track occupied · " + occupied : "Track clear";
-    byId("rail-scene").classList.toggle("occupied", Boolean(occupied));
+    byId("resource-state").textContent = blocks.join("  /  ");
+    byId("signal-label").textContent = "West block: " + blocks[0] + " · East block: " + blocks[1];
+    byId("rail-scene").classList.toggle("occupied", blocks.some(value => value !== "clear"));
   }
 
   function stop(message) {
@@ -141,7 +140,7 @@
     render();
     if (elapsed >= example.endTime) {
       stop("Complete");
-      byId("single-result").textContent = "Completed trial: service B waited " + example.wait.toFixed(2) + " min.";
+      byId("single-result").textContent = "Additional waiting across B and C: " + example.wait.toFixed(2) + " train-min.";
     } else {
       frame = requestAnimationFrame(tick);
     }

@@ -10,22 +10,22 @@
   <header><strong>Railway Delay Lab</strong><span>SE4042 · Transportation modelling</span></header>
   <main>
     <div class="intro">
-      <div><h1>Explore delay propagation</h1><p>Investigate waiting and uncertainty using a fictional two-service benchmark.</p></div>
+      <div><h1>Explore delay propagation</h1><p>Trace how a late train at Peradeniya Junction delays the crossing at Gampola and the following departure.</p></div>
       <span class="badge" id="mode-badge">Single simulation</span>
     </div>
     <div class="dashboard">
       <aside class="panel">
         <h2>Simulation settings</h2>
-        <p>Adjust the fictional queue inputs. Changing a setting resets playback.</p>
+        <p>Adjust the corridor timetable and delay inputs. Changing a setting resets playback.</p>
         <fieldset>
           <label for="mode">Experiment mode</label>
           <select id="mode"><option value="single">Single simulation</option><option value="monte">Monte Carlo experiment</option></select>
-          <label for="delay">Initial delay <span id="delay-value">5 min</span></label>
-          <input id="delay" type="range" min="0" max="20" value="5">
+          <label for="delay">Train A disruption <span id="delay-value">25 min</span></label>
+          <input id="delay" type="range" min="0" max="40" value="25">
           <label for="buffer">Buffer <span id="buffer-value">0 min</span></label>
           <input id="buffer" type="range" min="0" max="15" value="0">
-          <label for="entry">Mean entry delay <span id="entry-value">5 min</span></label>
-          <input id="entry" type="range" min="0" max="10" value="5">
+          <label for="entry">Mean entry delay <span id="entry-value">0 min</span></label>
+          <input id="entry" type="range" min="0" max="10" value="0">
           <label for="variation">Service duration variation <span id="variation-value">0%</span></label>
           <input id="variation" type="range" min="0" max="30" value="0">
           <label for="runs">Monte Carlo replications</label>
@@ -36,17 +36,19 @@
       </aside>
       <div class="content">
         <section class="panel">
-          <div class="heading"><div><h2>Live visualization</h2><p>Fictional shared resource</p></div><div class="clock" id="clock-panel"><small>Elapsed time</small><strong id="elapsed">00:00</strong></div></div>
-          <figure id="rail-scene" class="rail-scene" aria-label="Animated illustration of the fictional railway">
+          <div class="heading"><div><h2>Live visualization</h2><p>Peradeniya Junction – Gampola – Nawalapitiya</p></div><div class="clock" id="clock-panel"><small>Timetable clock</small><strong id="elapsed">00:00</strong></div></div>
+          <figure id="rail-scene" class="rail-scene" aria-label="Three trains on the modelled corridor">
             <img src="rail-landscape.webp" alt="Illustrated hill-country railway landscape with a small station">
             <div class="rail-line" aria-hidden="true"></div>
             <div id="train-A" class="rail-train" aria-hidden="true"><b>A</b><i></i></div>
             <div id="train-B" class="rail-train" aria-hidden="true"><b>B</b><i></i></div>
+            <div id="train-C" class="rail-train" aria-hidden="true"><b>C</b><i></i></div>
+            <div class="station-labels"><span>Peradeniya Jn.</span><span>Gampola</span><span>Nawalapitiya</span></div>
             <figcaption id="signal-label">Track clear</figcaption>
           </figure>
           <div class="queue-view">
             <div id="single-view">
-            <div class="resource-heading"><h3>Shared resource</h3><span id="resource-state">Idle</span></div>
+            <div class="resource-heading"><h3>West / east block</h3><span id="resource-state">Idle</span></div>
             <div class="queue-lane">
               <span class="marker">A</span>
               <div class="lane-detail"><strong id="state-A">Pending</strong><progress id="progress-A" max="1" value="0" aria-label="Service A progress"></progress></div>
@@ -56,6 +58,11 @@
               <span class="marker orange">B</span>
               <div class="lane-detail"><strong id="state-B">Pending</strong><progress id="progress-B" max="1" value="0" aria-label="Service B progress"></progress></div>
               <span id="wait-B">0.0 min waiting</span>
+            </div>
+            <div class="queue-lane">
+              <span class="marker violet">C</span>
+              <div class="lane-detail"><strong id="state-C">Pending</strong><progress id="progress-C" max="1" value="0" aria-label="Service C progress"></progress></div>
+              <span id="wait-C">0.0 min waiting</span>
             </div>
             </div>
             <p id="playback-state" role="status">Ready to play</p>
@@ -69,11 +76,11 @@
         <section>
           <h2 class="section-title">Results</h2>
           <div class="metrics">
-            <article class="panel metric"><small>Mean conflict wait</small><strong id="mean-result">— min</strong></article>
+            <article class="panel metric"><small>Mean extra B + C waiting</small><strong id="mean-result">— min</strong></article>
             <article class="panel metric"><small>95% confidence interval</small><strong id="ci-result">— min</strong></article>
             <article class="panel metric"><small>Completed replications</small><strong id="replications-result">0</strong></article>
           </div>
-          <div class="panel chart"><h3>Waiting time distribution</h3><p>Share of completed trials by waiting-time range (minutes).</p><div id="histogram" class="histogram">Experiment results will appear here.</div></div>
+          <div class="panel chart"><h3>Waiting time distribution</h3><p>Share of completed trials by additional B + C waiting (train-minutes).</p><div id="histogram" class="histogram">Experiment results will appear here.</div></div>
           <section class="panel chart" aria-labelledby="verification-title">
             <div class="heading">
               <div><h3 id="verification-title">Analytical benchmark</h3><p>Independent fictional two-service queue benchmark from the notebook.</p></div>
@@ -88,18 +95,20 @@
               <div><dt>Allowed error</dt><dd id="verified-tolerance">—</dd></div>
             </dl>
             <p id="verification-status" role="status">Verification pending</p>
+            <p id="corridor-check" role="status">Corridor hand check pending</p>
             <p>The benchmark uses fixed settings independently of the experiment controls.</p>
           </section>
         </section>
       </div>
     </div>
     <section class="panel guide">
-      <details open><summary>About / How to use</summary><p>Choose single simulation to watch the fictional queue or Monte Carlo to estimate its waiting-time distribution. Set the inputs and press Start. Pause suspends playback or sampling; Reset returns to the beginning. Identical seeds and settings reproduce results. The confidence interval estimates sampling uncertainty in the mean using 1.96 sample standard errors.</p></details>
+      <details open><summary>About / How to use</summary><p>A and C travel from Peradeniya Junction to Nawalapitiya. B travels in reverse. At Gampola trains dwell for at least two minutes. Each block admits one train in timetable order. Try a 25-minute disruption with zero random delay and zero buffer: B and C each wait 25 minutes. Then set a 15-minute buffer and compare. Monte Carlo pairs each disrupted timetable with a background-only run using identical entry and segment draws. Set the inputs and press Start. Pause suspends playback or sampling; Reset returns to the beginning. Identical seeds and settings reproduce results. The confidence interval estimates sampling uncertainty in the mean using 1.96 sample standard errors.</p></details>
     </section>
   </main>
   <script src="simulation.js"></script>
   <script src="statistics.js"></script>
   <script src="verification.js"></script>
+  <script src="corridor.js"></script>
   <script src="animation.js"></script>
 </body>
 </html>
