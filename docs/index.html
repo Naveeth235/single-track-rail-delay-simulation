@@ -9,12 +9,13 @@
 <body>
   <main>
     <div class="intro">
-      <div><h1>Railway Delay Simulator</h1><p class="route-title">Peradeniya Junction &ndash; Gampola &ndash; Nawalapitiya</p><p>Trace how a late train at Peradeniya Junction delays the crossing at Gampola and the following departure.</p></div>
+      <div><h1>Railway Delay Simulator</h1><p class="route-title">Peradeniya Junction &ndash; Gampola &ndash; Nawalapitiya</p></div>
       <span class="badge" id="mode-badge">Single simulation</span>
     </div>
     <div class="dashboard">
       <aside class="sidebar">
       <section class="panel">
+        <p>Trace how a late train at Peradeniya Junction delays the crossing at Gampola and the following departure.</p>
         <h2>Simulation settings</h2>
         <p>Adjust the corridor timetable and delay inputs. Changing a setting resets playback.</p>
         <fieldset>
@@ -40,6 +41,15 @@
         <p><strong>2. Compare buffers</strong><br>Increase the buffer and replay to see how the extra waiting changes.</p>
         <p><strong>3. Try Monte Carlo</strong><br>Enable random delays or running-time variation, then Start. Read the mean, confidence interval and distribution.</p>
         <p><strong>4. Check the model</strong><br>Press Run verification to compare against the reference results.</p>
+        <h3 class="parameter-heading">Parameter guide</h3>
+        <dl class="parameter-guide">
+          <div><dt>Train A disruption</dt><dd>Extra departure delay for Train A, in minutes.</dd></div>
+          <div><dt>Buffer</dt><dd>Extra time allowed in the planned schedule.</dd></div>
+          <div><dt>Mean entry delay</dt><dd>Average random delay when each train starts.</dd></div>
+          <div><dt>Running-time variation</dt><dd>Random percentage variation in journey duration.</dd></div>
+          <div><dt>Monte Carlo replications</dt><dd>Number of trials used to estimate average waiting.</dd></div>
+          <div><dt>Random seed</dt><dd>Use the same seed to repeat the same random experiment.</dd></div>
+        </dl>
       </section>
       </aside>
       <div class="content">
@@ -83,12 +93,15 @@
         <section>
           <section id="journey-results" class="panel journey-results">
             <h2>Journey results</h2>
-            <p>Each train’s destination arrival appears as it finishes its journey.</p>
-            <dl class="arrival-list">
-              <div><dt>A · Nawalapitiya</dt><dd id="arrival-A">Pending</dd></div>
-              <div><dt>B · Peradeniya Junction</dt><dd id="arrival-B">Pending</dd></div>
-              <div><dt>C · Nawalapitiya</dt><dd id="arrival-C">Pending</dd></div>
-            </dl>
+            <p>Arrival times use the selected buffer. Negative lateness means an early arrival.</p>
+            <div class="arrival-scroll"><table class="arrival-table">
+              <thead><tr><th>Train / destination</th><th>Scheduled</th><th>Actual</th><th>Lateness (min)</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">A · Nawalapitiya</th><td id="scheduled-A"></td><td id="arrival-A">Pending</td><td id="late-A">—</td></tr>
+                <tr><th scope="row">B · Peradeniya Junction</th><td id="scheduled-B"></td><td id="arrival-B">Pending</td><td id="late-B">—</td></tr>
+                <tr><th scope="row">C · Nawalapitiya</th><td id="scheduled-C"></td><td id="arrival-C">Pending</td><td id="late-C">—</td></tr>
+              </tbody>
+            </table></div>
             <p id="single-result" aria-live="polite"></p>
           </section>
           <section id="sampling-results" hidden>
@@ -101,6 +114,7 @@
             <article class="panel metric"><small>Completed replications</small><strong id="replications-result">0</strong></article>
           </div>
           <p id="interval-note"></p>
+          <p>Chance of more than 30 extra B + C train-minutes: <strong id="risk-result">Pending</strong></p>
           <div class="panel chart"><h3>Waiting time distribution</h3><p>Share of completed trials by additional B + C waiting (train-minutes).</p><div id="histogram" class="histogram">Experiment results will appear here.</div></div>
           </div>
           </section>

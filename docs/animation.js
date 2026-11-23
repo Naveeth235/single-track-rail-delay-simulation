@@ -77,6 +77,10 @@
     byId("ci-result").textContent = result && observations.length > 1
       ? result.low.toFixed(2) + " – " + result.high.toFixed(2) + " train-min" : "— min";
     byId("replications-result").textContent = observations.length.toLocaleString();
+    const large = observations.filter(wait => wait > 30).length;
+    byId("risk-result").textContent = result
+      ? (100 * large / observations.length).toFixed(1) + "% (" + large.toLocaleString() +
+        " of " + observations.length.toLocaleString() + " trials)" : "Pending";
     const fixedInputs = settings.entryMean === 0 && settings.variation === 0;
     byId("interval-note").textContent = result && fixedInputs
       ? "With random entry delays and running-time variation both off, every trial gives " +
@@ -163,10 +167,14 @@
     render();
   }
 
-  function render() {
-    const minute = 571 + Math.floor(elapsed);
-    byId("elapsed").textContent = String(Math.floor(minute / 60)).padStart(2, "0") + ":" +
+  function clockTime(offset) {
+    const minute = 571 + Math.floor(offset);
+    return String(Math.floor(minute / 60)).padStart(2, "0") + ":" +
       String(minute % 60).padStart(2, "0");
+  }
+
+  function render() {
+    byId("elapsed").textContent = clockTime(elapsed);
     const blocks = ["clear", "clear"];
     for (const [i, id] of ["A", "B", "C"].entries()) {
       const route = example.legs.slice(i * 2, i * 2 + 2);
@@ -191,10 +199,10 @@
       train.style.left = x + "%";
       train.style.setProperty("--loop-rise", (id === "B" ? loopRise(x) : 0) + "px");
       train.hidden = elapsed >= route[1].finish;
-      const arrivalMinute = 571 + Math.floor(route[1].finish);
-      byId("arrival-" + id).textContent = train.hidden
-        ? String(Math.floor(arrivalMinute / 60)).padStart(2, "0") + ":" + String(arrivalMinute % 60).padStart(2, "0")
-        : "Pending";
+      byId("scheduled-" + id).textContent = clockTime(route[1].scheduledFinish);
+      byId("arrival-" + id).textContent = train.hidden ? clockTime(route[1].finish) : "Pending";
+      byId("late-" + id).textContent = train.hidden
+        ? (route[1].finish - route[1].scheduledFinish).toFixed(1) : "—";
       const waited = route.reduce((sum, item) => sum + Math.min(item.wait, Math.max(0, elapsed - item.ready)), 0);
       byId("wait-" + id).textContent = waited.toFixed(1) + " min waiting";
     }
@@ -226,7 +234,9 @@
     render();
     if (elapsed >= example.endTime) {
       stop("Complete");
-      byId("single-result").textContent = "Additional waiting across B and C: " + example.wait.toFixed(2) + " train-min.";
+      byId("single-result").textContent = "Extra waiting caused by A’s disruption: B " +
+        example.extraB.toFixed(2) + " min + C " + example.extraC.toFixed(2) +
+        " min = " + example.wait.toFixed(2) + " train-min.";
     } else {
       frame = requestAnimationFrame(tick);
     }

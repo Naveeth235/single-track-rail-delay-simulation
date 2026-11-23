@@ -13,7 +13,7 @@ const Corridor = (() => {
         : Math.max(scheduled[index], legs[previousLeg].finish + 2);
       const start = Math.max(ready, previousBlock === null ? 0 : legs[previousBlock].finish);
       legs[index] = { origin, destination, ready, start, finish: start + durations[index],
-                      wait: start - ready };
+                      scheduledFinish: scheduled[index] + nominal[index], wait: start - ready };
     }
     // Evaluate the fixed route and block precedence constraints in dependency order.
     dispatch(0, 0, 1, null, null);
@@ -30,8 +30,10 @@ const Corridor = (() => {
     const durations = nominal.map(time => time * (1 + settings.variation * (2 * random() - 1)));
     const baseline = simulate(settings.buffer, 0, entries, durations);
     const legs = simulate(settings.buffer, settings.delay, entries, durations);
-    const wait = legs.slice(2).reduce((sum, leg, i) => sum + leg.wait - baseline[i + 2].wait, 0);
-    return { legs, wait, endTime: Math.max(...legs.map(leg => leg.finish)) };
+    const extra = legs.map((leg, i) => leg.wait - baseline[i].wait);
+    const extraB = extra[2] + extra[3];
+    const extraC = extra[4] + extra[5];
+    return { legs, extraB, extraC, wait: extraB + extraC, endTime: Math.max(...legs.map(leg => leg.finish)) };
   }
   return { simulate, trial, stations };
 })();
