@@ -4,6 +4,44 @@
   --line: #dce4eb;
   --accent: #176b87;
 }
+/* Railway illustration and rolling stock share the playback clock. */
+.rail-scene {
+  position: relative;
+  isolation: isolate;
+  margin: 20px 0 0;
+  background: #325b53;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.rail-scene img { display: block; width: 100%; height: clamp(168px, 21vw, 295px); object-fit: cover; }
+.rail-line { position: absolute; inset: auto 0 16% 0; height: 5px; background: repeating-linear-gradient(90deg,#37433e 0 5px,#888c78 5px 12px); border-block: 1px solid #c7cabb; }
+.rail-train {
+  position: absolute;
+  bottom: calc(16% + 4px);
+  width: clamp(30px, 7%, 64px);
+  height: clamp(16px, 2vw, 27px);
+  transform: translateX(-50%);
+  border: 1px solid #1a3842;
+  border-radius: 4px 11px 3px 3px;
+  background: linear-gradient(#f3ecce 0 19%, #236464 20% 77%, #dfcfa4 78% 86%, #274541 87%);
+  box-shadow: 0 3px 0 #293737;
+  display: flex; align-items: center; justify-content: space-evenly;
+}
+.rail-train b { font: bold 11px/1 system-ui; color: white; }
+.rail-train i { width: 48%; height: 32%; background: repeating-linear-gradient(90deg,#c4dcdc 0 22%,transparent 22% 32%); }
+#train-B { background: linear-gradient(#f8e1ba 0 19%,#a24c31 20% 77%,#efd2a7 78% 86%,#583d32 87%); }
+.rail-scene figcaption { position: absolute; top: 12px; left: 12px; padding: 5px 10px; border-radius: 20px; background: #173e36; color: white; font-size: 12px; font-weight: 600; }
+.rail-scene figcaption::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; background: #9be6af; }
+.rail-scene.occupied figcaption::before { background: #ffc672; }
+body:has(.rail-scene) { background: #f1f3ec; --ink: #173e36; --accent: #116856; --line: #d6dfd6; }
+body > header { background: #183d34; border-bottom: 3px solid #ceae73; }
+main .intro h1 { font-family: Georgia, serif; font-weight: 500; }
+.dashboard .panel { box-shadow: 0 3px 14px #15392b09; }
+.dashboard button:enabled:hover { filter: brightness(.94); }
+:focus-visible { outline: 3px solid #bf8432; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .rail-train { visibility: hidden; }
+}
 * { box-sizing: border-box; }
 body { margin: 0; background: #f3f6f9; color: var(--ink); font: 15px/1.5 "Segoe UI", system-ui, sans-serif; }
 header { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #192b40; color: white; padding: 18px max(24px, calc((100vw - 1280px) / 2)); }

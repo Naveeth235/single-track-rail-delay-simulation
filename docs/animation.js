@@ -87,6 +87,7 @@
     runs.disabled = !monteMode();
     byId("speed").disabled = monteMode();
     byId("single-view").hidden = monteMode();
+    byId("rail-scene").hidden = monteMode();
     byId("clock-panel").hidden = monteMode();
     byId("mode-badge").textContent = monteMode() ? "Monte Carlo experiment" : "Single simulation";
     byId("single-result").textContent = monteMode() ? "Repeated sampling mode." : "Trial result pending.";
@@ -110,11 +111,17 @@
         state = "Waiting";
       }
       byId("state-" + job.id).textContent = state;
-      byId("progress-" + job.id).value = Math.max(0, Math.min(1, (elapsed - job.start) / job.duration));
+      const progress = Math.max(0, Math.min(1, (elapsed - job.start) / job.duration));
+      byId("progress-" + job.id).value = progress;
+      // A starts ahead of B. Separate berths keep both visible at either end.
+      const berth = job.id === "A" ? 24 : 8;
+      byId("train-" + job.id).style.left = (berth + 68 * progress) + "%";
       const wait = Math.max(0, Math.min(job.wait, elapsed - job.ready));
       byId("wait-" + job.id).textContent = wait.toFixed(1) + " min waiting";
     }
     byId("resource-state").textContent = occupied ? "In use by " + occupied : "Idle";
+    byId("signal-label").textContent = occupied ? "Track occupied · " + occupied : "Track clear";
+    byId("rail-scene").classList.toggle("occupied", Boolean(occupied));
   }
 
   function stop(message) {
