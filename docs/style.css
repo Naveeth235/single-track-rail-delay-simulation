@@ -40,6 +40,17 @@ input[type=number], select { width: 100%; padding: 9px; border: 1px solid var(--
 button { padding: 9px 14px; border: 1px solid var(--line); border-radius: 7px; background: #f1f4f6; color: #677484; }
 button:first-child { background: #d9e9ee; }
 button:disabled, input:disabled, select:disabled { cursor: not-allowed; }
+.buttons button:not(:disabled) { cursor: pointer; color: var(--ink); }
+.buttons button#start:not(:disabled) { background: var(--accent); color: white; }
+.queue-view { margin: 22px 0; border: 1px solid var(--line); border-radius: 10px; background: #eef4f6; padding: 18px; }
+.resource-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+#resource-state { color: var(--accent); font-size: 13px; font-weight: 600; }
+.queue-lane { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.lane-detail { display: grid; gap: 6px; font-size: 13px; }
+.queue-lane > span:last-child { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+progress { width: 100%; height: 12px; accent-color: var(--accent); }
+#progress-B { accent-color: #a65d2c; }
+#playback-state { margin-top: 10px; }
 .speed { display: flex; align-items: center; gap: 8px; margin: 0; white-space: nowrap; }
 .speed select { width: auto; }
 .section-title { margin-bottom: 12px; }

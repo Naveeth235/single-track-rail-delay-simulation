@@ -11,12 +11,12 @@
   <main>
     <div class="intro">
       <div><h1>Explore delay propagation</h1><p>Investigate waiting and uncertainty using a fictional two-service benchmark.</p></div>
-      <span class="badge">Layout preview</span>
+      <span class="badge">Animation preview</span>
     </div>
     <div class="dashboard">
       <aside class="panel">
         <h2>Simulation settings</h2>
-        <p>Controls become available when the simulation engine is connected.</p>
+        <p>Playback uses a fixed illustrative example. Adjustable scenarios will be connected next.</p>
         <fieldset disabled>
           <label for="mode">Experiment mode</label>
           <select id="mode"><option>Single simulation</option><option>Monte Carlo experiment</option></select>
@@ -36,15 +36,24 @@
       </aside>
       <div class="content">
         <section class="panel">
-          <div class="heading"><div><h2>Live visualization</h2><p>Fictional shared resource</p></div><div class="clock"><small>Elapsed time</small><strong>00:00</strong></div></div>
-          <div class="scene" role="img" aria-label="Conceptual diagram of two fictional services and a shared resource">
-            <div class="service"><b class="marker">A</b>Service A</div>
-            <div class="resource">Shared resource<div class="track"></div><small>Awaiting simulation</small></div>
-            <div class="service"><b class="marker orange">B</b>Service B</div>
+          <div class="heading"><div><h2>Live visualization</h2><p>Fictional shared resource</p></div><div class="clock"><small>Elapsed time</small><strong id="elapsed">00:00</strong></div></div>
+          <div class="queue-view">
+            <div class="resource-heading"><h3>Shared resource</h3><span id="resource-state">Idle</span></div>
+            <div class="queue-lane">
+              <span class="marker">A</span>
+              <div class="lane-detail"><strong id="state-A">Pending</strong><progress id="progress-A" max="1" value="0" aria-label="Service A progress"></progress></div>
+              <span id="wait-A">0.0 min waiting</span>
+            </div>
+            <div class="queue-lane">
+              <span class="marker orange">B</span>
+              <div class="lane-detail"><strong id="state-B">Pending</strong><progress id="progress-B" max="1" value="0" aria-label="Service B progress"></progress></div>
+              <span id="wait-B">0.0 min waiting</span>
+            </div>
+            <p id="playback-state" role="status">Ready to play</p>
           </div>
           <div class="heading">
-            <div class="buttons"><button disabled>▶ Start</button><button disabled>Pause</button><button disabled>Reset</button></div>
-            <label class="speed">Playback speed <select disabled><option>1×</option><option>2×</option></select></label>
+            <div class="buttons"><button id="start">Start</button><button id="pause" disabled>Pause</button><button id="reset">Reset</button></div>
+            <label class="speed">Playback speed <select id="speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
           </div>
         </section>
         <section>
@@ -60,9 +69,10 @@
       </div>
     </div>
     <section class="panel guide">
-      <details open><summary>About / How to use</summary><p>This educational demonstration will illustrate discrete-event simulation, random input modelling and Monte Carlo estimation. Choose a scenario, adjust parameters and start the simulation once the engine is available. Compare the estimated mean with the analytical reference under its stated assumptions.</p></details>
+      <details open><summary>About / How to use</summary><p>Press Start to play the fixed fictional example. Watch each service progress through its pending, waiting, in-service and complete states. Pause freezes the clock, and Reset returns to the beginning. Adjustable scenarios and Monte Carlo results will be added in the next stages.</p></details>
     </section>
   </main>
   <script src="simulation.js"></script>
+  <script src="animation.js"></script>
 </body>
 </html>
