@@ -66,7 +66,6 @@
             </div>
             </div>
             <p id="playback-state" role="status">Ready to play</p>
-            <p id="single-result" aria-live="polite">Trial result pending.</p>
           </div>
           <div class="heading">
             <div class="buttons"><button id="start">Start</button><button id="pause" disabled>Pause</button><button id="reset">Reset</button></div>
@@ -74,13 +73,28 @@
           </div>
         </section>
         <section>
-          <h2 class="section-title">Results</h2>
+          <section id="journey-results" class="panel journey-results">
+            <h2>Journey results</h2>
+            <p>Each train’s destination arrival appears as it finishes its journey.</p>
+            <dl class="arrival-list">
+              <div><dt>A · Nawalapitiya</dt><dd id="arrival-A">Pending</dd></div>
+              <div><dt>B · Peradeniya Junction</dt><dd id="arrival-B">Pending</dd></div>
+              <div><dt>C · Nawalapitiya</dt><dd id="arrival-C">Pending</dd></div>
+            </dl>
+            <p id="single-result" aria-live="polite"></p>
+          </section>
+          <section id="sampling-results" hidden>
+          <h2 class="section-title">Monte Carlo results</h2>
+          <p id="sampling-hint">Press Start to sample the selected number of trials.</p>
+          <div id="sample-data" hidden>
           <div class="metrics">
             <article class="panel metric"><small>Mean extra B + C waiting</small><strong id="mean-result">— min</strong></article>
             <article class="panel metric"><small>95% confidence interval</small><strong id="ci-result">— min</strong></article>
             <article class="panel metric"><small>Completed replications</small><strong id="replications-result">0</strong></article>
           </div>
           <div class="panel chart"><h3>Waiting time distribution</h3><p>Share of completed trials by additional B + C waiting (train-minutes).</p><div id="histogram" class="histogram">Experiment results will appear here.</div></div>
+          </div>
+          </section>
           <section class="panel chart" aria-labelledby="verification-title">
             <div class="heading">
               <div><h3 id="verification-title">Analytical benchmark</h3><p>Independent fictional two-service queue benchmark from the notebook.</p></div>

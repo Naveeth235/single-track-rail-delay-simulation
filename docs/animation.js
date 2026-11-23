@@ -71,6 +71,8 @@
 
   function renderStatistics() {
     const result = QueueStatistics.summarize(observations);
+    byId("sample-data").hidden = !result;
+    byId("sampling-hint").hidden = Boolean(result);
     byId("mean-result").textContent = result ? result.mean.toFixed(2) + " train-min" : "— min";
     byId("ci-result").textContent = result && observations.length > 1
       ? result.low.toFixed(2) + " – " + result.high.toFixed(2) : "— min";
@@ -142,12 +144,14 @@
       runs.value = String(target);
     }
     runs.disabled = !monteMode();
+    byId("journey-results").hidden = monteMode();
+    byId("sampling-results").hidden = !monteMode();
     byId("speed").disabled = monteMode();
     byId("single-view").hidden = monteMode();
     byId("rail-scene").hidden = monteMode();
     byId("clock-panel").hidden = monteMode();
     byId("mode-badge").textContent = monteMode() ? "Monte Carlo experiment" : "Single simulation";
-    byId("single-result").textContent = monteMode() ? "Repeated sampling mode." : "Trial result pending.";
+    byId("single-result").textContent = "Additional B + C waiting is calculated at the end of this run.";
     renderStatistics();
     render();
   }
@@ -180,6 +184,10 @@
       train.style.left = x + "%";
       train.style.setProperty("--loop-rise", (id === "B" ? loopRise(x) : 0) + "px");
       train.hidden = elapsed >= route[1].finish;
+      const arrivalMinute = 571 + Math.floor(route[1].finish);
+      byId("arrival-" + id).textContent = train.hidden
+        ? String(Math.floor(arrivalMinute / 60)).padStart(2, "0") + ":" + String(arrivalMinute % 60).padStart(2, "0")
+        : "Pending";
       const waited = route.reduce((sum, item) => sum + Math.min(item.wait, Math.max(0, elapsed - item.ready)), 0);
       byId("wait-" + id).textContent = waited.toFixed(1) + " min waiting";
     }
