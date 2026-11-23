@@ -2,10 +2,33 @@
 (function () {
   "use strict";
   const byId = id => document.getElementById(id);
-  const example = QueueBenchmark.simulate({ delay: 5 });
+  let example;
   let elapsed = 0;
   let frame = null;
   let previous = null;
+
+  function resetExample() {
+    stop("Ready to play");
+    elapsed = 0;
+    const seedInput = byId("seed");
+    const seed = seedInput.valueAsNumber;
+    if (!Number.isInteger(seed) || seed < 1 || seed > 4294967295) {
+      seedInput.value = "42";
+    }
+    const settings = {
+      delay: Number(byId("delay").value),
+      buffer: Number(byId("buffer").value),
+      entryMean: Number(byId("entry").value),
+      variation: Number(byId("variation").value) / 100
+    };
+    for (const id of ["delay", "buffer", "entry", "variation"]) {
+      byId(id + "-value").textContent = byId(id).value + (id === "variation" ? "%" : " min");
+    }
+    const random = QueueBenchmark.createRandom(Number(seedInput.value));
+    example = QueueBenchmark.simulate(QueueBenchmark.sampleScenario(settings, random));
+    byId("single-result").textContent = "Trial result pending.";
+    render();
+  }
 
   function render() {
     const seconds = Math.floor(elapsed * 60);
@@ -47,6 +70,7 @@
     render();
     if (elapsed >= example.endTime) {
       stop("Complete");
+      byId("single-result").textContent = "Completed trial: service B waited " + example.wait.toFixed(2) + " min.";
     } else {
       frame = requestAnimationFrame(tick);
     }
@@ -54,7 +78,7 @@
 
   byId("start").addEventListener("click", () => {
     if (frame !== null) return;
-    if (elapsed >= example.endTime) elapsed = 0;
+    if (elapsed >= example.endTime) resetExample();
     previous = null;
     render();
     byId("start").disabled = true;
@@ -63,10 +87,10 @@
     frame = requestAnimationFrame(tick);
   });
   byId("pause").addEventListener("click", () => stop("Paused"));
-  byId("reset").addEventListener("click", () => {
-    stop("Ready to play");
-    elapsed = 0;
-    render();
-  });
-  render();
+  byId("reset").addEventListener("click", resetExample);
+  for (const id of ["delay", "buffer", "entry", "variation"]) {
+    byId(id).addEventListener("input", resetExample);
+  }
+  byId("seed").addEventListener("change", resetExample);
+  resetExample();
 })();

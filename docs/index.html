@@ -11,27 +11,27 @@
   <main>
     <div class="intro">
       <div><h1>Explore delay propagation</h1><p>Investigate waiting and uncertainty using a fictional two-service benchmark.</p></div>
-      <span class="badge">Animation preview</span>
+      <span class="badge">Single simulation</span>
     </div>
     <div class="dashboard">
       <aside class="panel">
         <h2>Simulation settings</h2>
-        <p>Playback uses a fixed illustrative example. Adjustable scenarios will be connected next.</p>
-        <fieldset disabled>
+        <p>Adjust the fictional queue inputs. Changing a setting resets playback.</p>
+        <fieldset>
           <label for="mode">Experiment mode</label>
-          <select id="mode"><option>Single simulation</option><option>Monte Carlo experiment</option></select>
-          <label for="delay">Initial delay <span>5 min</span></label>
+          <select id="mode" disabled><option>Single simulation</option><option>Monte Carlo experiment (coming next)</option></select>
+          <label for="delay">Initial delay <span id="delay-value">5 min</span></label>
           <input id="delay" type="range" min="0" max="20" value="5">
-          <label for="buffer">Buffer <span>0 min</span></label>
+          <label for="buffer">Buffer <span id="buffer-value">0 min</span></label>
           <input id="buffer" type="range" min="0" max="15" value="0">
-          <label for="entry">Mean entry delay <span>5 min</span></label>
+          <label for="entry">Mean entry delay <span id="entry-value">5 min</span></label>
           <input id="entry" type="range" min="0" max="10" value="5">
-          <label for="variation">Service duration variation <span>0%</span></label>
+          <label for="variation">Service duration variation <span id="variation-value">0%</span></label>
           <input id="variation" type="range" min="0" max="30" value="0">
           <label for="runs">Monte Carlo replications</label>
-          <input id="runs" type="number" min="100" value="1000">
+          <input id="runs" type="number" min="100" value="1000" disabled>
           <label for="seed">Random seed</label>
-          <input id="seed" type="number" min="1" value="42">
+          <input id="seed" type="number" min="1" max="4294967295" step="1" value="42" required>
         </fieldset>
       </aside>
       <div class="content">
@@ -50,6 +50,7 @@
               <span id="wait-B">0.0 min waiting</span>
             </div>
             <p id="playback-state" role="status">Ready to play</p>
+            <p id="single-result" aria-live="polite">Trial result pending.</p>
           </div>
           <div class="heading">
             <div class="buttons"><button id="start">Start</button><button id="pause" disabled>Pause</button><button id="reset">Reset</button></div>
@@ -69,7 +70,7 @@
       </div>
     </div>
     <section class="panel guide">
-      <details open><summary>About / How to use</summary><p>Press Start to play the fixed fictional example. Watch each service progress through its pending, waiting, in-service and complete states. Pause freezes the clock, and Reset returns to the beginning. Adjustable scenarios and Monte Carlo results will be added in the next stages.</p></details>
+      <details open><summary>About / How to use</summary><p>Choose the fictional queue inputs and press Start. Watch each service progress through pending, waiting, in-service and complete states. Pause freezes the clock, and Reset returns to the beginning. An identical seed and settings reproduce the same trial. Monte Carlo results will be added in the next stage.</p></details>
     </section>
   </main>
   <script src="simulation.js"></script>
