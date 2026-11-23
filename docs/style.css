@@ -9,38 +9,41 @@
   position: relative;
   isolation: isolate;
   margin: 20px 0 0;
-  background: #325b53;
-  border-radius: 12px;
+  background: #325b53 url("rail-landscape.webp") center 45% / cover no-repeat;
+  border-radius: 16px;
   overflow: hidden;
+  border: 1px solid #c4cdbd;
+  box-shadow: 0 6px 18px #183d3414;
 }
-.rail-scene img { display: block; width: 100%; height: clamp(168px, 21vw, 295px); object-fit: cover; }
-#rail-map { display: block; width: 100%; height: 92px; background: #e2e3cb; }
-.rail-scene { padding-bottom: 32px; }
-.rail-scene img { height: clamp(115px, 15vw, 190px); }
+.rail-scene img { display: block; width: 100%; height: clamp(145px, 19vw, 240px); object-fit: cover; opacity: 0; }
+#rail-map { display: block; width: 100%; height: 92px; background: linear-gradient(180deg, #203d3210, #19392dd9 36%, #19392df5 100%); }
+.rail-scene { padding-bottom: 42px; }
 .rail-train {
+  --coach-color: #247a74;
   position: absolute;
-  bottom: calc(54px + var(--loop-rise, 0px));
-  width: clamp(30px, 7%, 64px);
-  height: clamp(16px, 2vw, 27px);
+  bottom: calc(66px + var(--loop-rise, 0px));
+  width: clamp(32px, 8%, 78px);
+  height: clamp(19px, 2.4vw, 29px);
   transform: translateX(-50%);
-  border: 1px solid #1a3842;
-  border-radius: 4px 11px 3px 3px;
-  background: linear-gradient(#f3ecce 0 19%, #236464 20% 77%, #dfcfa4 78% 86%, #274541 87%);
-  box-shadow: 0 3px 0 #293737;
+  border: 1px solid #233831;
+  border-radius: 5px 14px 3px 3px;
+  background: linear-gradient(#eee8d4 0 14%, var(--coach-color) 15% 74%, #e9ce8e 75% 83%, #253c36 84%);
+  box-shadow: 0 2px 0 #1b2924, 0 3px 5px #0c201d65;
   display: flex; align-items: center; justify-content: space-evenly;
+  z-index: 2;
 }
-.rail-train b { font: bold 11px/1 system-ui; color: white; }
-.rail-scene #train-B { border-radius: 11px 4px 3px 3px; }
-.rail-scene #train-C { background: #70528a; }
+.rail-train::after { content: ""; position: absolute; inset: auto 12% -4px; height: 5px; background: radial-gradient(circle at 15% 50%, #c1bca9 0 1px, #202c28 2px 3px, transparent 3.5px), radial-gradient(circle at 85% 50%, #c1bca9 0 1px, #202c28 2px 3px, transparent 3.5px); }
+.rail-train b { font: bold clamp(9px, 1vw, 12px)/1 system-ui; color: white; }
+.rail-scene #train-B { --coach-color: #a45b36; border-radius: 14px 5px 3px 3px; flex-direction: row-reverse; }
+.rail-scene #train-C { --coach-color: #765a91; }
 .rail-train[hidden] { display: none; }
 .marker.violet { background: #70528a; }
-.station-labels { position: absolute; inset: auto 0 0; height: 32px; background: #183d34; color: white; font: 600 clamp(9px, 1.3vw, 13px)/1.1 system-ui; }
-.station-labels span { position: absolute; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; }
+.station-labels { position: absolute; inset: auto 0 0; height: 42px; background: #173b32; color: #f7f2df; font: 600 clamp(9px, 1.2vw, 13px)/1.15 system-ui; border-top: 1px solid #e2d7b245; }
+.station-labels span { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 20%; text-align: center; text-wrap: balance; }
 .station-labels span:first-child { left: 10%; }
 .station-labels span:nth-child(2) { left: 50%; }
 .station-labels span:last-child { left: 90%; }
-.rail-train i { width: 48%; height: 32%; background: repeating-linear-gradient(90deg,#c4dcdc 0 22%,transparent 22% 32%); }
-#train-B { background: linear-gradient(#f8e1ba 0 19%,#a24c31 20% 77%,#efd2a7 78% 86%,#583d32 87%); }
+.rail-train i { width: 49%; height: 35%; border-radius: 2px; background: repeating-linear-gradient(90deg,#d6ebdf 0 21%,#33564f 21% 25%,transparent 25% 33%); }
 .rail-scene figcaption { position: absolute; top: 12px; left: 12px; padding: 5px 10px; border-radius: 20px; background: #173e36; color: white; font-size: 12px; font-weight: 600; }
 .rail-scene figcaption::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; background: #9be6af; }
 .rail-scene.occupied figcaption::before { background: #ffc672; }

@@ -14,7 +14,11 @@
     for (let i = 1; i < loop.length; i++) {
       const [left, height] = loop[i - 1];
       const [right, nextHeight] = loop[i];
-      if (x >= left && x <= right) return height + (nextHeight - height) * (x - left) / (right - left);
+      if (x >= left && x <= right) {
+        const fraction = (x - left) / (right - left);
+        const eased = fraction * fraction * (3 - 2 * fraction);
+        return height + (nextHeight - height) * eased;
+      }
     }
     return 0;
   }
@@ -28,18 +32,35 @@
     const ctx = canvas.getContext("2d");
     ctx.scale(scale, scale);
     ctx.lineJoin = "round";
-    for (const points of [[[0, 0], [100, 0]], loop]) {
+    const curvedLoop = Array.from({ length: 113 }, (_, i) => {
+      const x = 36 + i / 4;
+      return [x, loopRise(x)];
+    });
+    for (const points of [[[0, 0], [100, 0]], curvedLoop]) {
       ctx.beginPath();
       points.forEach(([x, rise], i) => {
         ctx[i ? "lineTo" : "moveTo"](width * x / 100, 72 - rise);
       });
-      for (const [color, thickness, dash] of [["#aea994", 11, []], ["#60584b", 10, [2, 5]],
-                                                ["#394342", 5, []], ["#cac9b6", 2, []]]) {
+      // Ballast, sleepers and two bright rail edges.
+      for (const [color, thickness, dash] of [["#17342d", 15, []], ["#8d8974", 12, []],
+                                                ["#504737", 11, [3, 5]], ["#e4dcc2", 6, []],
+                                                ["#414b42", 2, []]]) {
         ctx.strokeStyle = color;
         ctx.lineWidth = thickness;
         ctx.setLineDash(dash);
         ctx.stroke();
       }
+    }
+    // Station markers align with the station names below.
+    ctx.setLineDash([]);
+    for (const x of [10, 50, 90]) {
+      ctx.beginPath();
+      ctx.arc(width * x / 100, 72, 5, 0, Math.PI * 2);
+      ctx.fillStyle = "#f8e7b5";
+      ctx.fill();
+      ctx.strokeStyle = "#233b31";
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
   }
   new ResizeObserver(drawTrack).observe(byId("rail-map"));
