@@ -4,7 +4,9 @@ Explore how one late train delays two others on the single-track corridor betwee
 
 [Web demo on GitHub Pages](https://naveeth235.github.io/single-track-rail-delay-simulation/) · [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Naveeth235/single-track-rail-delay-simulation/blob/main/notebook/rail-delay-simulator.ipynb)
 
-![The dashboard showing the controls, three trains and the crossing loop at Gampola](figures/demo-screenshot.png)
+![At 10:53, A and B have reached their destinations and C is at Gampola. The analytical and corridor checks both pass.](figures/demo-screenshot.png)
+
+To reproduce the pictured scenario, set A’s disruption to **15 min**, the buffer to **3 min**, mean entry delay to **2 min** and segment running-time variation to **10%**. Use seed **42** in Single simulation mode.
 
 ## The question
 
@@ -17,6 +19,8 @@ Train A leaves Peradeniya Junction late. Train B approaches from Nawalapitiya an
 - **Local Python.** From the repository root, run `python -m pip install -r requirements.txt`. Open `notebook/rail-delay-simulator.ipynb` in Jupyter with that Python environment and run all cells.
 
 ## Using the demo
+
+To publish the dashboard on GitHub Pages, select **Deploy from a branch**, choose **main** and **/docs**, and save. The browser loads the included scripts, stylesheet and landscape directly.
 
 Press **Start** with the default settings. When the journey finishes, B and C have each waited 25 extra minutes. Change **Buffer** to 15 minutes and replay. Each now waits 10 extra minutes. Switch to **Monte Carlo experiment** and set **Mean entry delay** to 5 minutes to see how the result varies across trials. [User guide](USER_GUIDE.md)
 

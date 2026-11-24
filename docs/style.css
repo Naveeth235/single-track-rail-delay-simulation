@@ -143,13 +143,12 @@ summary { cursor: pointer; font-weight: 700; }
   .dashboard { grid-template-columns: 1fr; }
 }
 @media (min-width: 851px) {
-  .sidebar, .content {
-    grid-row: span 2;
-    grid-template-rows: subgrid;
+  .sidebar {
+    grid-template-rows: auto 1fr;
     align-self: stretch;
-    align-items: start;
   }
-  .sidebar .guide { align-self: stretch; }
+  .guide p { margin-top: 8px; }
+  .parameter-guide { gap: 6px; }
   .rail-scene { margin-top: 12px; }
   .panel { padding: 16px; }
   .queue-view { margin: 12px 0; padding: 10px 14px; }

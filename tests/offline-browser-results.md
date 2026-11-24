@@ -2,6 +2,8 @@
 
 ## Three-train corridor
 
+The final browser checks exercised both modes at desktop and mobile widths (1440 and 390 pixels). With fixed inputs, C reached its destination at 11:31 under both the zero- and 15-minute buffers. Its arrival lateness fell from 25 to 10 minutes. The default Monte Carlo experiment put all 1,000 trials above 30 extra train-minutes. Enabling random entry delays produced a different mean. Pause, resume, reset and both verification checks passed.
+
 Chrome and Edge loaded the corridor dashboard directly from disk with networking disabled. Both passed layout checks at 320, 390, 768 and 1280 pixels. Playback showed B waiting at Gampola, paused and resumed, and reported 50 additional train-minutes for B and C in the zero-buffer hand calculation. The deterministic 15-minute buffer produced 20 train-minutes. Both the corridor hand checks and the independent analytical check passed.
 
 Against the Python notebook engine, the JavaScript implementation matched all six departures, arrivals and conflict waits in each of 120 cases within 1e-9 minutes. The cases included the four hand-check buffers and seeded random delays and running times. Comparing identical sampled inputs avoids dependence on the languages' different random number generators.
