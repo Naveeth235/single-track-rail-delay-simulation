@@ -10,6 +10,8 @@ Open `docs/index.html` from the extracted project or visit the [GitHub Pages dem
 
 ## Controls
 
+The journey table compares each scheduled arrival with its actual arrival. Lateness is the difference in minutes. In the default run, C arrives at 11:31 against a schedule of 11:06. A 15-minute buffer moves its scheduled arrival to 11:21 and reduces its lateness to 10 minutes.
+
 | Control | Range and default | What it changes |
 |---|---|---|
 | Experiment mode | Single simulation (default) or Monte Carlo | Watch one journey or sample many paired timetables. |
@@ -33,9 +35,12 @@ Then set **Mean entry delay** to **5 minutes** and start again. In each trial th
 | Mean extra B + C waiting | Average additional conflict waiting summed over the two trains, in train-minutes per trial. |
 | 95% confidence interval | Approximate sampling uncertainty in the estimated **mean**. Individual trials can fall outside it. |
 | Completed replications | Number of timetable pairs included so far. |
+| Chance of more than 30 extra B + C train-minutes | Percentage and count of completed trials above the threshold. A trial with exactly 30 contributes to the denominator only. |
 | Waiting time distribution | Percentage of trials in each range. Zero has its own bar. Each positive range includes its upper endpoint. |
 
 ## Verify the numbers
+
+![Monte Carlo dashboard with five-minute mean entry delays and the verification result](figures/monte-carlo-dashboard.png)
 
 Press **Run verification**. The separate two-service queue uses 50,000 trials and seed 42. Its simulated mean is about **2.4752 min**, within **0.0775 min** of the theoretical **2.5000 min**. The button also checks corridor waits of **50, 40, 30 and 20 train-minutes** at buffers of 0, 5, 10 and 15 minutes, with tolerance **10⁻⁹ train-minutes**. These tests use fixed settings, so moving a dashboard slider changes your experiment while the reference values stay the same.
 
